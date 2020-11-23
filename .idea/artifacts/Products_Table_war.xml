@@ -7,7 +7,7 @@
         <packaging>war</packaging>
       </options>
     </properties>
-    <root id="archive" name="Products_Table-1.0-SNAPSHOT.war">
+    <root id="archive" name="Products_Table.war">
       <element id="artifact" artifact-name="Products_Table:war exploded" />
     </root>
   </artifact>

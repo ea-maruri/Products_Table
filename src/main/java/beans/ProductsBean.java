@@ -1,5 +1,6 @@
 package beans;
 
+import javax.faces.component.html.HtmlDataTable;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import java.io.Serializable;
@@ -12,14 +13,26 @@ import java.util.*;
 @Named("productsBean")
 @ViewScoped
 public class ProductsBean implements Serializable {
+    // Collections
     HashSet<Product> dataHashSet = new HashSet<>();
     HashMap<String, Product> dataHashMap = new HashMap<>();
     List<Product> dataList = new ArrayList<>();
 
+    // Sort
     private String serialNumberSortType = "asc";
     private String nameSortType = "asc";
     private String itemPriceSortType = "asc";
     private String stockSortType = "asc";
+
+    // Table
+    private HtmlDataTable table;
+    private int rowsOnPage = 5;
+
+    // Filter
+    private BetweenReqStorage betweenReqStorage;
+    private List<Product> filteredOutDataList = new ArrayList<>();
+    private String criteria = "all";
+    private double priceCriteria = 50.0;
 
 
     /*Constructor*/
@@ -96,6 +109,17 @@ public class ProductsBean implements Serializable {
         this.dataHashMap = dataHashMap;
     }
 
+    public List<Product> getDataListInStock() {
+        List<Product> products = new ArrayList<>();
+        for (Product prod : dataList) {
+            // Returns only greater than zero
+            if (prod.getStock() > 0) {
+                products.add(prod);
+            }
+        }
+        return products;
+    }
+
     public List<Product> getDataList() {
         return dataList;
     }
@@ -157,6 +181,62 @@ public class ProductsBean implements Serializable {
         this.stockSortType = stockSortType;
     }
 
+    public HtmlDataTable getTable() {
+        return table;
+    }
+
+    public void setTable(HtmlDataTable table) {
+        this.table = table;
+    }
+
+    public int getRowsOnPage() {
+        return rowsOnPage;
+    }
+
+    public void setRowsOnPage(int rowsOnPage) {
+        this.rowsOnPage = rowsOnPage;
+    }
+
+    private void getDataBetweenReq() {
+        if (betweenReqStorage.getFilteredDataList().size() > 0 && !criteria.equals("all")) {
+            dataList.clear();
+            dataList.addAll(betweenReqStorage.getFilteredDataList());
+        }
+    }
+
+    public String getCriteria() {
+        return criteria;
+    }
+
+    public void setCriteria(String criteria) {
+        this.criteria = criteria;
+    }
+
+    public BetweenReqStorage getBetweenReqStorage() {
+        return betweenReqStorage;
+    }
+
+    public void setBetweenReqStorage(BetweenReqStorage betweenReqStorage) {
+        this.betweenReqStorage = betweenReqStorage;
+    }
+
+    public List<Product> getFilteredOutDataList() {
+        return filteredOutDataList;
+    }
+
+    public void setFilteredOutDataList(List<Product> filteredOutDataList) {
+        this.filteredOutDataList = filteredOutDataList;
+    }
+
+    public double getPriceCriteria() {
+        return priceCriteria;
+    }
+
+    public void setPriceCriteria(double priceCriteria) {
+        this.priceCriteria = priceCriteria;
+    }
+
+
     /*Utility methods*/
     public void deleteRowHashSet(Product product) {
         dataHashSet.remove(product);
@@ -167,7 +247,7 @@ public class ProductsBean implements Serializable {
     }
 
 
-    /*Sortrings*/
+    /*Sorts*/
     public String sortDataBySerialNumber() {
         dataList.sort(new Comparator<Product>() {
             @Override
@@ -233,4 +313,69 @@ public class ProductsBean implements Serializable {
         stockSortType = (stockSortType.equals("asc")) ? "dsc" : "asc";
         return null;
     }
+
+    /*Pagination*/
+    public void goToFirstPage() {
+        table.setFirst(0);
+    }
+
+    public void goToPreviousPage() {
+        table.setFirst(table.getFirst() - table.getRows());
+    }
+
+    public void goToNextPage() {
+        table.setFirst(table.getFirst() + table.getRows());
+    }
+
+    public void goToLastPage() {
+        int totalRows = table.getRowCount();
+        int displayRows = table.getRows();
+        int full = totalRows / displayRows;
+        int modulo = totalRows % displayRows;
+
+        if (modulo > 0) {
+            table.setFirst(full * displayRows);
+        } else {
+            table.setFirst((full - 1) * displayRows);
+        }
+    }
+
+
+    public void addTableFilter() {
+        if (criteria.equals("all")) {
+            betweenReqStorage.clearAll();
+            return;
+        }
+        Collections.sort(dataList, new Comparator<Product>() {
+            @Override
+            public int compare(Product prod1, Product prod2) {
+                return (int) (prod1.getItemPrice() - prod2.getItemPrice());
+            }
+        });
+
+        if (criteria.equals(">=" + priceCriteria)) {
+            for (int i = 0; i < dataList.size(); i++) {
+                Product product = dataList.get(i);
+                if (product.getItemPrice() < priceCriteria) {
+                    filteredOutDataList.add(dataList.remove(i));
+                    i = 0;
+                }
+            }
+            betweenReqStorage.setFilteredDataList(dataList);
+        }
+
+        if (criteria.equals("<" + priceCriteria)) {
+            for (int i = 0; i < dataList.size(); i++) {
+                Product product = dataList.get(i);
+                if (product.getItemPrice() >= priceCriteria) {
+                    filteredOutDataList.add(dataList.remove(i));
+                    i = 0;
+                }
+            }
+            betweenReqStorage.setFilteredDataList(dataList);
+        }
+
+        table.setFirst(0);
+    }
+
 }

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+  <h:head>
+    <title>Products Table</title>
+
+    <!-- Required meta tags for Bootstrap -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+
+    <!-- Bootstrap CSS -->
+    <h:outputStylesheet library="css" name="bootstrap-4.5.2-dist/css/bootstrap.min.css"/>
+  </h:head>
+
+  <h:body>
+    <f:view>
+
+      <!-- Title -->
+      <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+          <h1 class="display-3">
+            <strong><h:outputLabel>Products table</h:outputLabel></strong>
+          </h1>
+          <hr class="my-2"/>
+        </div>
+      </div>
+
+
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-12 d-flex justify-content-center">
+            <h:form>
+              <h:dataTable value="#{productsBean.dataHashSet}" var="p" border="1">
+                <h:column headerClass="py-1 px-2">
+                  <f:facet name="header">Units</f:facet>
+                  <h:inputText/>
+                </h:column>
+
+                <h:column headerClass="py-1 px-2">
+                  <f:facet name="header">Total Item Price</f:facet>
+                  <h:inputText value="" readonly="true"/>
+                </h:column>
+
+                <h:column headerClass="py-1 px-2">
+                  <f:facet name="header">Serial Number</f:facet>
+                  <span class="mx-1">#{p.serialNumber}</span>
+                </h:column>
+
+                <h:column headerClass="py-1 px-2">
+                  <f:facet name="header">Item Price</f:facet>
+                  <span class="mx-1">#{p.itemPrice}</span>
+                </h:column>
+
+                <h:column headerClass="py-1 px-2">
+                  <f:facet name="header">Product Name</f:facet>
+                  <span class="mx-1">#{p.productName}</span>
+                </h:column>
+
+                <h:column headerClass="py-1 px-2">
+                  <f:facet name="header">Stock</f:facet>
+                  <span class="mx-1">#{p.stock}</span>
+                </h:column>
+
+              </h:dataTable>
+            </h:form>
+          </div>
+        </div>
+
+        <div class="row my-5">
+          <div class="col-sm-12 d-flex justify-content-end">
+            <p>#{msgs.totalPrice} 0.0</p>
+          </div>
+        </div>
+      </div>
+    </f:view>
+
+    <h:outputScript library="js" name="jquery.js"/>
+    <h:outputScript library="css" name="bootstrap-4.5.2-dist/js/bootstrap.min.js"/>
+  </h:body>
+</html>

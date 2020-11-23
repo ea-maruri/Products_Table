@@ -3,10 +3,7 @@ package beans;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.*;
 
 /**
  * @author EAMT on 23/11/2020
@@ -16,7 +13,14 @@ import java.util.logging.Logger;
 @ViewScoped
 public class ProductsBean implements Serializable {
     HashSet<Product> dataHashSet = new HashSet<>();
-    HashMap<String, Product> dataHashMap =new HashMap<>();
+    HashMap<String, Product> dataHashMap = new HashMap<>();
+    List<Product> dataList = new ArrayList<>();
+
+    private String serialNumberSortType = "asc";
+    private String nameSortType = "asc";
+    private String itemPriceSortType = "asc";
+    private String stockSortType = "asc";
+
 
     /*Constructor*/
     public ProductsBean() {
@@ -69,6 +73,7 @@ public class ProductsBean implements Serializable {
         // For Hah Map
         for (Product prod :  dataHashSet) {
             dataHashMap.put(prod.getSerialNumber(), prod);
+            dataList.add(prod);
         }
     }
 
@@ -91,6 +96,66 @@ public class ProductsBean implements Serializable {
         this.dataHashMap = dataHashMap;
     }
 
+    public List<Product> getDataList() {
+        return dataList;
+    }
+
+    public void setDataList(List<Product> dataList) {
+        this.dataList = dataList;
+    }
+
+
+    public String getSerialNumberSortType() {
+        if (serialNumberSortType.equals("asc")) {
+            return "dsc";
+        }
+        else {
+            return "asc";
+        }
+    }
+
+    public void setSerialNumberSortType(String serialNumberSortType) {
+        this.serialNumberSortType = serialNumberSortType;
+    }
+
+    public String getNameSortType() {
+        if (nameSortType.equals("asc")) {
+            return "dsc";
+        }
+        else {
+            return "asc";
+        }
+    }
+
+    public void setNameSortType(String nameSortType) {
+        this.nameSortType = nameSortType;
+    }
+
+    public String getItemPriceSortType() {
+        if ( itemPriceSortType.equals("asc")) {
+            return "dsc";
+        }
+        else {
+            return "asc";
+        }
+    }
+
+    public void setItemPriceSortType(String itemPriceSortType) {
+        this.itemPriceSortType = itemPriceSortType;
+    }
+
+    public String getStockSortType() {
+        if (stockSortType.equals("asc")) {
+            return "dsc";
+        }
+        else {
+            return "asc";
+        }
+    }
+
+    public void setStockSortType(String stockSortType) {
+        this.stockSortType = stockSortType;
+    }
 
     /*Utility methods*/
     public void deleteRowHashSet(Product product) {
@@ -101,4 +166,71 @@ public class ProductsBean implements Serializable {
         dataHashMap.remove(String.valueOf(obj));
     }
 
+
+    /*Sortrings*/
+    public String sortDataBySerialNumber() {
+        dataList.sort(new Comparator<Product>() {
+            @Override
+            public int compare(Product o1, Product o2) {
+                if (serialNumberSortType.equals("asc")) {
+                    return o1.getSerialNumber().compareTo(o2.getSerialNumber());
+                } else {
+                    return (-1) * o1.getSerialNumber().compareTo(o2.getSerialNumber());
+                }
+            }
+        });
+
+        serialNumberSortType = (serialNumberSortType.equals("asc")) ? "dsc" : "asc";
+        return null;
+    }
+
+    public String sortDataByProductName() {
+        dataList.sort(new Comparator<Product>() {
+            @Override
+            public int compare(Product o1, Product o2) {
+                if (nameSortType.equals("asc")) {
+                    return o1.getProductName().compareTo(o2.getProductName());
+                } else {
+                    return (-1) * o1.getProductName().compareTo(o2.getProductName());
+                }
+            }
+        });
+
+        nameSortType = (nameSortType.equals("asc")) ? "dsc" : "asc";
+        return null;
+    }
+
+    public String sortDataByItemPrice() {
+        dataList.sort(new Comparator<Product>() {
+            @Override
+            public int compare(Product o1, Product o2) {
+                if (itemPriceSortType.equals("asc")) {
+                    return (int) (o1.getItemPrice() - o2.getItemPrice());
+                }
+                else {
+                    return (int) ((-1) * (o1.getItemPrice() - o2.getItemPrice()));
+                }
+            }
+        });
+
+        itemPriceSortType = (itemPriceSortType.equals("asc")) ? "dsc" : "asc";
+        return null;
+    }
+
+    public String sortDataByStock() {
+        dataList.sort(new Comparator<Product>() {
+            @Override
+            public int compare(Product o1, Product o2) {
+                if (stockSortType.equals("asc")) {
+                    return (int) (o1.getStock() - o2.getStock());
+                }
+                else {
+                    return (int) ((-1) * (o1.getStock() - o2.getStock()));
+                }
+            }
+        });
+
+        stockSortType = (stockSortType.equals("asc")) ? "dsc" : "asc";
+        return null;
+    }
 }

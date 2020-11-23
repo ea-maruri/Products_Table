@@ -11,6 +11,7 @@ public class Product {
     private double itemPrice;
     private int stock;
 
+
     /*Constructor*/
     public Product(String serialNumber, String productName, double itemPrice, int stock) {
         this.serialNumber = serialNumber;

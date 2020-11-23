@@ -36,7 +36,10 @@
             <h:form>
 <!--              <h:dataTable value="#{productsBean.dataHashSet}" var="p" border="1">-->
 <!--              <h:dataTable value="#{productsBean.dataHashMap}" var="p" border="1">-->
-              <h:dataTable value="#{productsBean.dataList}" var="p" border="1">
+              <h:dataTable value="#{productsBean.dataList}"
+                           binding="#{productsBean.table}" rows="#{productsBean.rowsOnPage}" first="0"
+                           var="p" border="1">
+
                 <h:column headerClass="py-1 px-2">
                   <f:facet name="header">
                     #{msgs.units}
@@ -46,7 +49,7 @@
 
                 <h:column headerClass="py-1 px-2">
                   <f:facet name="header">
-                    #{msgs.totalItemPrice}
+                    #{msgs.totalItemPrice}<br/>
                   </f:facet>
                   <h:inputText value="" readonly="true"/>
                 </h:column>
@@ -66,6 +69,14 @@
                     <h:commandLink action="#{productsBean.sortDataByItemPrice()}">
                       #{msgs.itemPrice} (#{productsBean.itemPriceSortType})
                     </h:commandLink>
+                    <br/>
+                    <h:selectOneMenu value="#{productsBean.criteria}">
+                      <f:selectItem itemValue="all" itemLabel="all" />
+                      <f:selectItem itemValue="&lt;#{productsBean.priceCriteria}" itemLabel="&lt;#{productsBean.priceCriteria}" />
+                      <f:selectItem itemValue="&gt;=#{productsBean.priceCriteria}" itemLabel="&gt;=#{productsBean.priceCriteria}" />
+                    </h:selectOneMenu>
+
+                    <h:commandButton value="Filter" action="#{productsBean.addTableFilter()}"/>
 
                   </f:facet>
                   <span class="mx-1">#{p.itemPrice}</span>
@@ -91,7 +102,33 @@
                   <span class="mx-1">#{p.stock}</span>
                 </h:column>
 
+
+                <f:facet name="footer">
+                  Page
+                  <h:outputText value="#{(productsBean.table.first div productsBean.table.rows) + 1}">
+                    <f:converter converterId="javax.faces.Integer"/>
+                  </h:outputText>
+                  of
+                  <h:outputText styleClass="mr-3" value="#{productsBean.table.rowCount mod productsBean.table.rows eq 0 ? (productsBean.table.rowCount div  productsBean.table.rows) : ((productsBean.table.rowCount div  productsBean.table.rows) + 1)-(((productsBean.table.rowCount div  productsBean.table.rows) + 1) mod 1)}">
+                    <f:converter converterId="javax.faces.Integer"/>
+                  </h:outputText>
+
+                  <h:commandButton styleClass="btn btn-warning" value="#{msgs.firstPage}" action="#{productsBean.goToFirstPage()}" disabled="#{productsBean.table.first eq 0}" />
+                  <h:commandButton styleClass="btn btn-warning" value="#{msgs.previousPage}" action="#{productsBean.goToPreviousPage()}" disabled="#{productsBean.table.first eq 0}" />
+                  <h:commandButton styleClass="btn btn-warning" value="#{msgs.nextPage}" action="#{productsBean.goToNextPage()}" disabled="#{productsBean.table.first + productsBean.table.rows ge productsBean.table.rowCount}" />
+                  <h:commandButton styleClass="btn btn-warning" value="#{msgs.lastPage}" action="#{productsBean.goToLastPage()}" disabled="#{productsBean.table.first + productsBean.table.rows ge productsBean.table.rowCount}" />
+
+<!--                  <strong>#{msgs.firstPage}:</strong> #{productsBean.table.first}-->
+                  <strong>#{msgs.rows}:</strong> #{productsBean.table.rows}
+                  <strong>#{msgs.rowsCount}:</strong> #{productsBean.table.rowCount}
+                </f:facet>
+
               </h:dataTable>
+
+              <div class="d-flex justify-content-end my-3 d-block">
+                <h:commandButton styleClass="btn btn-primary py-2 px-3" value="Purchase"
+                                 onclick="alert('Make a purchase!')"/>
+              </div>
             </h:form>
           </div>
         </div>
